@@ -7,29 +7,38 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 driver_path = r"C:\Users\ashis\OneDrive\Desktop\chromedriver-win32\chromedriver-win32\chromedriver.exe"
-
 service = Service(driver_path)
 
 # Initialize WebDriver
 web = webdriver.Chrome(service=service)
 
-
 web.get("https://www.bewakoof.com/login")
-    
+
+try:
     # Wait until the login input field is present
-login = WebDriverWait(web, 10).until(
-        EC.presence_of_element_located((By.XPATH, "/html/body/div/div/div[3]/div/div/div[2]/div/div[2]/form/div/div/input"))
+    login = WebDriverWait(web, 10).until(
+        EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div[3]/div/div/div[2]/div/div[2]/form/div/div/input"))
     )
-login.send_keys("1234567890")
+    login.send_keys("1234567890")
+
+    # Close any overlay if it appears (example for an overlay with class 'wzrk-overlay')
+    try:
+        overlay = WebDriverWait(web, 5).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "wzrk-overlay"))
+        )
+        web.execute_script("arguments[0].click();", overlay)
+    except:
+        pass  # If overlay is not found, continue
 
     # Wait until the submit button is clickable
-submit = WebDriverWait(web, 10).until(
-        EC.element_to_be_clickable((By.XPATH, "/html/body/div/div/div[3]/div/div/div[2]/div/div[2]/form/button"))
+    submit = WebDriverWait(web, 10).until(
+        EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[3]/div/div/div[2]/div/div[2]/form/button"))
     )
-submit.click()
+    web.execute_script("arguments[0].scrollIntoView();", submit)
+    web.execute_script("arguments[0].click();", submit)
 
     # Wait for user input to close the browser
-input("Press Enter to close the browser...")
+    input("Press Enter to close the browser...")
 
-
-web.quit()
+finally:
+    web.quit()
